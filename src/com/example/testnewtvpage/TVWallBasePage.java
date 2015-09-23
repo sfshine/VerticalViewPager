@@ -84,4 +84,10 @@ public abstract class TVWallBasePage
         return mContext;
     }
     
+    public void setFoucusItem(int position) {
+        
+    }
+    
+    public void setSelectItem(int index) {}
+    
 }

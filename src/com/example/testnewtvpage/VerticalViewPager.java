@@ -52,7 +52,7 @@ public class VerticalViewPager extends ViewGroup
 {
     
     private static final String TAG = "ViewPager";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     
     private static final boolean USE_CACHE = false;
     
@@ -197,6 +197,16 @@ public class VerticalViewPager extends ViewGroup
     private int mDrawingOrder;
     private ArrayList<View> mDrawingOrderedChildren;
     private static final ViewPositionComparator sPositionComparator = new ViewPositionComparator();
+    
+    private View mNextFocusLeft = null;
+    private View mNextFocusRight = null;
+    private View mNextFocusUp = null;
+    private View mNextFocusDown = null;
+    
+    /**
+     * When this view has focus and the next focus is {@link #FOCUS_FORWARD},
+     * the user may specify which view to go to next.
+     */
     
     /**
      * Indicates that the pager is in an idle, settled state. The current page
@@ -760,6 +770,7 @@ public class VerticalViewPager extends ViewGroup
         //            duration = (int) ((pageDelta + 1) * 1000);
         //        }
         //        duration = Math.min(duration, MAX_SETTLE_DURATION);
+        
         mScroller.startScroll(sx, sy, dx, dy, duration);
         ViewCompat.postInvalidateOnAnimation(this);
     }
@@ -1020,22 +1031,22 @@ public class VerticalViewPager extends ViewGroup
             }
         }
         sortChildDrawingOrder();
-        
-        if (hasFocus()) {
-            View currentFocused = findFocus();
-            ItemInfo ii = currentFocused != null ? infoForAnyChild(currentFocused) : null;
-            if (ii == null || ii.position != mCurItem) {
-                for (int i = 0; i < getChildCount(); i++) {
-                    View child = getChildAt(i);
-                    ii = infoForChild(child);
-                    if (ii != null && ii.position == mCurItem) {
-                        if (child.requestFocus(focusDirection)) {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        //解决 下一次选中不是上一个位置的问题
+        //        if (hasFocus()) {
+        //            View currentFocused = findFocus();
+        //            ItemInfo ii = currentFocused != null ? infoForAnyChild(currentFocused) : null;
+        //            if (ii == null || ii.position != mCurItem) {
+        //                for (int i = 0; i < getChildCount(); i++) {
+        //                    View child = getChildAt(i);
+        //                    ii = infoForChild(child);
+        //                    if (ii != null && ii.position == mCurItem) {
+        //                        if (child.requestFocus(focusDirection)) {
+        //                            break;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
     }
     
     private void sortChildDrawingOrder() {
@@ -2458,9 +2469,6 @@ public class VerticalViewPager extends ViewGroup
     }
     
     public boolean arrowScroll(int direction) {
-        if (!mScroller.isFinished()) {
-            return false;
-        }
         View currentFocused = findFocus();
         if (currentFocused == this) {
             currentFocused = null;
@@ -2517,15 +2525,40 @@ public class VerticalViewPager extends ViewGroup
         else if (direction == FOCUS_UP || direction == FOCUS_BACKWARD) {
             // Trying to move left and nothing there; try to page.
             handled = pageUp();
+            if (!handled) {
+                handled = jumpToNextFocusIfNoContent(getNextFocusUp());
+            }
         }
         else if (direction == FOCUS_DOWN || direction == FOCUS_FORWARD) {
             // Trying to move right and nothing there; try to page.
             handled = pageDown();
+            if (!handled) {
+                handled = jumpToNextFocusIfNoContent(getNextFocusDown());
+            }
+        }
+        else if (direction == FOCUS_LEFT || direction == FOCUS_FORWARD) {
+            // Trying to move right and nothing there; try to page.
+            handled = jumpToNextFocusIfNoContent(getNextFocusLeft());
+            
+        }
+        else if (direction == FOCUS_RIGHT || direction == FOCUS_FORWARD) {
+            handled = jumpToNextFocusIfNoContent(getNextFocusRight());
+            
         }
         if (handled) {
             playSoundEffect(SoundEffectConstants.getContantForFocusDirection(direction));
         }
         return handled;
+    }
+    
+    //解决坐标nav选中错乱问题
+    private boolean jumpToNextFocusIfNoContent(View nextFocus) {
+        if (nextFocus == null) {
+            return false;
+        }
+        nextFocus.requestFocus();
+        return true;
+        
     }
     
     private Rect getChildRectInPagerCoordinates(Rect outRect, View child) {
@@ -2841,4 +2874,37 @@ public class VerticalViewPager extends ViewGroup
             return llp.position - rlp.position;
         }
     }
+    
+    public View getNextFocusLeft() {
+        return mNextFocusLeft;
+    }
+    
+    public void setNextFocusLeft(View mNextFocusLeft) {
+        this.mNextFocusLeft = mNextFocusLeft;
+    }
+    
+    public View getNextFocusRight() {
+        return mNextFocusRight;
+    }
+    
+    public void setNextFocusRight(View mNextFocusRight) {
+        this.mNextFocusRight = mNextFocusRight;
+    }
+    
+    public View getNextFocusUp() {
+        return mNextFocusUp;
+    }
+    
+    public void setNextFocusUp(View mNextFocusUp) {
+        this.mNextFocusUp = mNextFocusUp;
+    }
+    
+    public View getNextFocusDown() {
+        return mNextFocusDown;
+    }
+    
+    public void setNextFocusDown(View mNextFocusDown) {
+        this.mNextFocusDown = mNextFocusDown;
+    }
+    
 }
