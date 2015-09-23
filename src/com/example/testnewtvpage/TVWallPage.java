@@ -64,19 +64,8 @@ public class TVWallPage extends TVWallBasePage
         }
     }
     
-    public View getButton(int position) {
-        return mButtons.get(position);
-    }
-    
     @Override
     public void fetchData() {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    @Override
-    public void notifiData() {
-        // TODO Auto-generated method stub
         
     }
     

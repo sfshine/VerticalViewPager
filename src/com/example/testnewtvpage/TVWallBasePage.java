@@ -59,19 +59,6 @@ public abstract class TVWallBasePage
     
     public abstract void fetchData();
     
-    public abstract void notifiData();
-    
-    /**
-     * 控制UI显示LoadingView
-     * 
-     * @title: showLoadingView
-     * @description: TODO
-     * @return: void
-     */
-    public void showLoadingView() {
-        
-    }
-    
     public View getView() {
         return mContainer;
     };
@@ -87,7 +74,5 @@ public abstract class TVWallBasePage
     public void setFoucusItem(int position) {
         
     }
-    
-    public void setSelectItem(int index) {}
     
 }
