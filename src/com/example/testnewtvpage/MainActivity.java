@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.example.testnewtvpage.TVWallBasePage.ITVWallPageCallback;
 
@@ -22,10 +24,12 @@ public class MainActivity extends Activity implements ITVWallPageCallback
     public static int mCurrentPosition;
     private VerticalViewPager mViewpager_v3;
     private TVWallAdapter mTvWallAdapter;
-    private View mButton2;
-    private View mButton3;
-    private LinearLayout mRelativeLayout;
-    private View mButton1;
+    private View mNav2;
+    private View mNav3;
+    private LinearLayout mLinearLayout;
+    private View mNav1;
+    private Handler mHandler = new Handler();
+    private RelativeLayout mRelativeLayout;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +40,12 @@ public class MainActivity extends Activity implements ITVWallPageCallback
     }
     
     private void initView() {
-        mRelativeLayout = (LinearLayout) findViewById(R.id.ll);
+        mLinearLayout = (LinearLayout) findViewById(R.id.ll);
+        mRelativeLayout = (RelativeLayout) findViewById(R.id.rt);
         
-        mButton1 = findViewById(R.id.button1);
-        mButton2 = findViewById(R.id.button2);
-        mButton3 = findViewById(R.id.button3);
+        mNav1 = findViewById(R.id.nav1);
+        mNav2 = findViewById(R.id.nav2);
+        mNav3 = findViewById(R.id.nav3);
         
         mViewpager_v3 = (VerticalViewPager) findViewById(R.id.viewpager_v3);
         mTvWallAdapter = new TVWallAdapter();
@@ -59,13 +64,14 @@ public class MainActivity extends Activity implements ITVWallPageCallback
         
         mTvWallAdapter.setData(pages);
         mViewpager_v3.setAdapter(mTvWallAdapter);
-        mViewpager_v3.setFocusable(false);
         
-        mButton1.post(new Runnable()
+        mViewpager_v3.setNextFocusLeft(mNav1);
+        mNav1.post(new Runnable()
         {
+            
             @Override
             public void run() {
-                mButton1.requestFocus();
+                mNav1.requestFocus();
             }
         });
         
@@ -150,11 +156,13 @@ public class MainActivity extends Activity implements ITVWallPageCallback
     
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        View view = mRelativeLayout.findFocus();
-        if (view != null && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT) {
-            mTvWallAdapter.getPage(mViewpager_v3.getCurrentItem()).setFoucusItem(0);
-            mViewpager_v3.setNextFocusLeft(view);
-            return true;
+        View view = mLinearLayout.findFocus();
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (view != null && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                mTvWallAdapter.getPage(mViewpager_v3.getCurrentItem()).setFoucusItem(0);
+                mViewpager_v3.setNextFocusLeft(view);
+                return true;
+            }
         }
         return super.dispatchKeyEvent(event);
     }
