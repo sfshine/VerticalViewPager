@@ -1,6 +1,5 @@
 package com.example.testnewtvpage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -8,10 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -49,19 +46,8 @@ public class MainActivity extends Activity implements ITVWallPageCallback
         
         mViewpager_v3 = (VerticalViewPager) findViewById(R.id.viewpager_v3);
         mTvWallAdapter = new TVWallAdapter();
-        List<TVWallBasePage> pages = new ArrayList<TVWallBasePage>();
-        TVWallPage tvWallPage = new TVWallPage(this, this);
-        TVWallPage tvWallPage2 = new TVWallPage(this, this);
-        TVWallPage tvWallPage3 = new TVWallPage(this, this);
-        TVWallPage tvWallPage4 = new TVWallPage(this, this);
-        TVWallPage tvWallPage5 = new TVWallPage(this, this);
         
-        pages.add(tvWallPage);
-        pages.add(tvWallPage2);
-        pages.add(tvWallPage3);
-        pages.add(tvWallPage4);
-        pages.add(tvWallPage5);
-        
+        List<TVWallBasePage> pages = TVWallPageFactory.generateTVWallPage(MainActivity.this, "全部");
         mTvWallAdapter.setData(pages);
         mViewpager_v3.setAdapter(mTvWallAdapter);
         
@@ -101,7 +87,6 @@ public class MainActivity extends Activity implements ITVWallPageCallback
     
     class TVWallAdapter extends PagerAdapter
     {
-        private String[] titles = null;
         private List<TVWallBasePage> mDatas = null;
         
         public TVWallBasePage getPage(int position) {
@@ -110,21 +95,12 @@ public class MainActivity extends Activity implements ITVWallPageCallback
         
         public void setData(List<TVWallBasePage> datas) {
             this.mDatas = datas;
-            titles = new String[datas.size()];
-            for (int i = 0; i < datas.size(); i++) {
-                titles[i] = datas.get(i).getProgramType();
-            }
             notifyDataSetChanged();
         }
         
         @Override
         public boolean isViewFromObject(View arg0, Object arg1) {
             return arg0 == arg1;
-        }
-        
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return titles[position];
         }
         
         @Override
@@ -135,8 +111,7 @@ public class MainActivity extends Activity implements ITVWallPageCallback
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             TVWallBasePage tvWallBasePage = mDatas.get(position);
-            //tvWallBasePage.fetchData();
-            
+            tvWallBasePage.fetchData();
             View view = tvWallBasePage.getView();
             view.setId(position);
             container.addView(view);

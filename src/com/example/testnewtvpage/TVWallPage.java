@@ -12,11 +12,12 @@ import android.widget.Toast;
 public class TVWallPage extends TVWallBasePage
 {
     
-    private List<View> mButtons;
-    
-    public TVWallPage(Context context, ITVWallPageCallback stbFragmentCallback) {
-        super(context, stbFragmentCallback);
+    public TVWallPage(Context context) {
+        super(context);
     }
+    
+    //private List<TVWallData> mTvWallBasePages;
+    private List<View> mButtons;
     
     @Override
     public int onSetContentView() {
@@ -26,7 +27,6 @@ public class TVWallPage extends TVWallBasePage
     @Override
     public void initView() {
         mButtons = new ArrayList<View>();
-        
         mButtons.add(findViewById(R.id.button1));
         mButtons.add(findViewById(R.id.button2));
         mButtons.add(findViewById(R.id.button3));
@@ -66,7 +66,9 @@ public class TVWallPage extends TVWallBasePage
     
     @Override
     public void fetchData() {
-        
+        if (getView() == null) {
+            bindView(mContext);
+        }
     }
     
 }

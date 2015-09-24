@@ -7,34 +7,26 @@ import android.widget.TextView;
 
 public abstract class TVWallBasePage
 {
-    private String mProgramType;
     protected ITVWallPageCallback mSTBFragmentCallback;
-    private View mContainer;
+    protected View mContainer;
     protected Context mContext;
-    
-    public TVWallBasePage(Context context, ITVWallPageCallback stbFragmentCallback) {
-        mSTBFragmentCallback = stbFragmentCallback;
-        mContext = context;
-        setContentView();
-    }
     
     public interface ITVWallPageCallback
     {
-        /**
-         * @title: onCallback
-         * @description: 暂时无用
-         * @return: void
-         */
         public void onRefreshData();
     }
     
-    public void setContentView() {
+    public TVWallBasePage(Context context) {
+        mContext = context;
+    }
+    
+    public void bindView(Context context) {
+        mContext = context;
         int layout = onSetContentView();
         if (layout > 0) {
             mContainer = ViewUtil.inflateView(onSetContentView(), mContext);
             initView();
             setListener();
-            initData();
         }
         else {
             mContainer = new TextView(mContext);
@@ -55,17 +47,11 @@ public abstract class TVWallBasePage
     
     public void setListener() {};
     
-    public void initData() {};
-    
     public abstract void fetchData();
     
     public View getView() {
         return mContainer;
     };
-    
-    public String getProgramType() {
-        return mProgramType;
-    }
     
     public Context getContext() {
         return mContext;
