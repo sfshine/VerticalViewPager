@@ -2469,6 +2469,9 @@ public class VerticalViewPager extends ViewGroup
     }
     
     public boolean arrowScroll(int direction) {
+        if (!mScroller.isFinished())
+            return false;
+        
         View currentFocused = findFocus();
         if (currentFocused == this) {
             currentFocused = null;
